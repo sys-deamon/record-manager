@@ -1,2 +1,2 @@
 # Record Manager
-A simple sql-lite cpp record manager
+A simple sql-lite cpp record manager.
