@@ -85,6 +85,10 @@ int main()
             newSleepInterval.wakeTime = wakeTime;
             newSleepInterval.notes = notes_1;
 
+            PrintSleepIntervalRecord(newSleepInterval);
+        }
+        else if (choice == 2)
+        {
             std::cout << "Enter Sleep Data\n";
             std::cout << "Date: ";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -92,6 +96,7 @@ int main()
             std::cout << "Did you sleep? (1 = y/0 = n): ";
             std::cin >> didSleep;
 
+            char tempChoice = 'n';
             while(true)
             {
                 std::cout << "Do you want to enter some notes? (y/n): ";
@@ -118,15 +123,13 @@ int main()
             newSleepRecord.didSleep = didSleep;
             newSleepRecord.notes = notes_2;
 
-            PrintSleepIntervalRecord(newSleepInterval);
-
             PrintSleepRecord(newSleepRecord);
         }
-        else if (choice == 2)
+        else if (choice == 3)
         {
             std::cout << "YET TO IMPLEMENT\n";
         }
-        else if (choice == 3)
+        else if (choice == 4)
         {
             std::cout << "YET TO IMPLEMENT\n";
         }
@@ -138,9 +141,10 @@ int main()
 void ShowMainMenu()
 {
     std::cout<< "====MAIN MENU====\n";
-    std::cout<< "1. Enter Data\n";
-    std::cout<< "2. Show Database In Browser\n";
-    std::cout<< "3. Show Record Count\n";
+    std::cout<< "1. Enter Sleep Interval Data\n";
+    std::cout<< "2. Enter Sleep Log Data\n";
+    std::cout<< "3. Show Database In Browser\n";
+    std::cout<< "4. Show Record Count\n";
     std::cout<< "0. Exit\n";
 }
 
