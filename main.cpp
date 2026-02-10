@@ -2,6 +2,16 @@
 #include <string>
 #include <limits>
 
+enum class DateError
+{
+    Success,
+    InvalidDay,
+    InvalidMonth,
+    InvalidYear,
+    InvalidChar,
+    InvalidLength
+};
+
 struct Sleep_Interval
 {
     std::string sleepDate;
@@ -21,6 +31,9 @@ struct Sleep_Record
 void ShowMainMenu();
 void PrintSleepIntervalRecord(const Sleep_Interval& sleepInvervalRecord);
 void PrintSleepRecord(const Sleep_Record& sleepRecord);
+DateError IsValidDate(const std::string& date);
+int IsValidTime(const std::string& time);
+std::string GetDateErrorMessage(DateError error);
 
 int main()
 {
@@ -47,8 +60,17 @@ int main()
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
             std::cout << "Enter Sleep Interval Data\n";
+
             std::cout << "Sleep Date: ";
             std::getline(std::cin, sleepDate, '\n');
+
+            DateError dateValidationResult = IsValidDate(sleepDate);
+            if (dateValidationResult != DateError::Success)
+            {
+                std::cout << GetDateErrorMessage(dateValidationResult) << std::endl;
+                return EXIT_FAILURE; // for now
+            }
+
             std::cout << "Sleep Time: ";
             std::getline(std::cin, sleepTime, '\n');
             std::cout << "Wake Date: ";
@@ -135,7 +157,7 @@ int main()
         }
     }
     while (choice != 0);
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void ShowMainMenu()
@@ -164,4 +186,96 @@ void PrintSleepRecord(const Sleep_Record& sleepRecord)
     std::cout << sleepRecord.date << std::endl;
     std::cout << sleepRecord.didSleep << std::endl;
     std::cout << sleepRecord.notes << std::endl;
+}
+
+DateError IsValidDate(const std::string& date)
+{
+    // I need to verify if the input date matches DD-MM-YYYY format
+    // which is two numbers - two numbers - four numbers
+
+    // If string is too short or long, reject immediately.
+    if (date.length() != 10) 
+    {
+        return DateError::InvalidLength;
+    }
+
+    if (date[0] >= '0' && date[0] <= '9' )
+    {
+        if (date[1] >= '0' && date[1] <= '9' )
+        {
+            // checking if the day is valid
+            int day = ((date[0] - '0') * 10) + (date[1] - '0');
+            if (day > 31 || day < 1) return DateError::InvalidDay;
+
+            if (date[2] == '-')
+            {
+                if (date[3] >= '0' && date[3] <= '9' )
+                {
+                    if (date[4] >= '0' && date[4] <= '9' )
+                    {
+                        // checking if the month is valid
+                        int month = ((date[3] - '0') * 10) + (date[4] - '0');
+                        if (month > 12 || month < 1) return DateError::InvalidMonth;
+
+                        if (date[5] == '-')
+                        {
+                            if (date[6] >= '0' && date[6] <= '9' )
+                            {
+                                if (date[7] >= '0' && date[7] <= '9' )
+                                {
+                                    if (date[8] >= '0' && date[8] <= '9' )
+                                    {
+                                        if (date[9] >= '0' && date[9] <= '9' )
+                                        {
+                                            // checking if the year is valid
+                                            int year = ((date[6] - '0') * 1000) + ((date[7] - '0') * 100) + ((date[8] - '0') * 10) + (date[9] - '0');
+                                            if (year < 1) return DateError::InvalidYear;
+
+                                            return DateError::Success; // date is valid
+                                        }
+                                        return DateError::InvalidYear;
+                                    }
+                                    return DateError::InvalidYear;
+                                }
+                                return DateError::InvalidYear;
+                            }
+                            return DateError::InvalidChar;
+                        }
+                        return DateError::InvalidMonth;
+                    }
+                    return DateError::InvalidMonth;
+                }
+                return DateError::InvalidChar;
+            }
+            return DateError::InvalidDay;
+        }
+        return DateError::InvalidDay;
+    }
+    return DateError::InvalidChar;
+}
+
+int IsValidTime(const std::string& time)
+{
+    return 777;
+}
+
+std::string GetDateErrorMessage(DateError error)
+{
+    switch (error)
+    {
+        case DateError::Success:
+            return "Success";
+        case DateError::InvalidDay:
+            return "Error: Day must be two digits (e.g., 01-31).";
+        case DateError::InvalidMonth:
+            return "Error: Month must be two digits (e.g., 01-12).";
+        case DateError::InvalidYear:
+            return "Error: Year must be four digits (e.g., 2026).";
+        case DateError::InvalidChar:
+            return "Error: Date contains invalid characters or missing separators (-).";
+        case DateError::InvalidLength:
+            return "Error: Date length is short or too long (it must be like 01-01-2026)";
+        default:
+            return "Error: Unknown Date error occurred.";
+    }
 }
