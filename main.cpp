@@ -12,6 +12,16 @@ enum class DateError
     InvalidLength
 };
 
+enum class TimeError
+{
+    Success,
+    InvalidHour,
+    InvalidMinutes,
+    InvalidChar,
+    InvalidSeparator,
+    InvalidLength,
+};
+
 struct Sleep_Interval
 {
     std::string sleepDate;
@@ -32,8 +42,9 @@ void ShowMainMenu();
 void PrintSleepIntervalRecord(const Sleep_Interval& sleepInvervalRecord);
 void PrintSleepRecord(const Sleep_Record& sleepRecord);
 DateError IsValidDate(const std::string& date);
-int IsValidTime(const std::string& time);
-std::string GetDateErrorMessage(DateError error);
+TimeError IsValidTime(const std::string& time);
+std::string GetDateErrorMessage(const DateError& error);
+std::string GetTimeErrorMessage(const TimeError& error);
 
 int main()
 {
@@ -73,10 +84,26 @@ int main()
 
             std::cout << "Sleep Time: ";
             std::getline(std::cin, sleepTime, '\n');
+
+            TimeError timeValidationResult = IsValidTime(sleepTime);
+            if (timeValidationResult != TimeError::Success)
+            {
+                std::cout << GetTimeErrorMessage(timeValidationResult) << std::endl;
+                return EXIT_FAILURE; // for now :)
+            }
+
             std::cout << "Wake Date: ";
             std::getline(std::cin, wakeDate, '\n');
+
             std::cout << "Wake Time: ";
             std::getline(std::cin, wakeTime, '\n');
+
+            timeValidationResult = IsValidTime(wakeTime);
+            if (timeValidationResult != TimeError::Success)
+            {
+                std::cout << GetTimeErrorMessage(timeValidationResult) << std::endl;
+                return EXIT_FAILURE; // for now :)
+            }
 
             char tempChoice = 'n';
             while(true)
@@ -254,17 +281,52 @@ DateError IsValidDate(const std::string& date)
     return DateError::InvalidChar;
 }
 
-int IsValidTime(const std::string& time)
+TimeError IsValidTime(const std::string& time)
 {
-    return 777;
+    // Validating the length of the input
+    if (time.length() != 5)
+    {
+        return TimeError::InvalidLength;
+    }
+
+    // Validating the time
+    if (time[0] >= '0' && time[0] <= '2')
+    {
+        if (time[1] >= '0' && time[1] <= '9')
+        {
+            // Checking if the hour stays under 24
+            int hour = ((time[0] - '0') * 10) + (time[1] - '0');
+            if (hour > 23 || hour < 0) return TimeError::InvalidHour;
+
+            if (time[2] == ':')
+            {
+                if (time[3] >= '0' && time[3] <= '6')
+                {
+                    if (time[4] >= '0' && time[4] <= '9')
+                    {
+                        // Making sure that minutes stay under 60
+                        int min = ((time[3] - '0') * 10) + (time[4] - '0');
+                        if (min < 0 || min > 59) return TimeError::InvalidMinutes;
+
+                        return TimeError::Success;
+                    }
+                    return TimeError::InvalidMinutes;
+                }
+                return TimeError::InvalidMinutes;
+            }
+            return TimeError::InvalidSeparator;
+        }
+        return TimeError::InvalidHour;
+    }
+    return TimeError::InvalidChar;
 }
 
-std::string GetDateErrorMessage(DateError error)
+std::string GetDateErrorMessage(const DateError& error)
 {
     switch (error)
     {
         case DateError::Success:
-            return "Success";
+            return "Success.";
         case DateError::InvalidDay:
             return "Error: Day must be two digits (e.g., 01-31).";
         case DateError::InvalidMonth:
@@ -274,8 +336,29 @@ std::string GetDateErrorMessage(DateError error)
         case DateError::InvalidChar:
             return "Error: Date contains invalid characters or missing separators (-).";
         case DateError::InvalidLength:
-            return "Error: Date length is short or too long (it must be like 01-01-2026)";
+            return "Error: Date length is short or too long (it must be like 01-01-2026).";
         default:
             return "Error: Unknown Date error occurred.";
+    }
+}
+
+std::string GetTimeErrorMessage(const TimeError& error)
+{
+    switch (error)
+    {
+        case TimeError::Success:
+            return "Success.";
+        case TimeError::InvalidHour:
+            return "Error: Invalid Hour. Hour should be in 24 hour format (e.g., 00 to 23).";
+        case TimeError::InvalidMinutes:
+            return "Error: Invalid Minutes. Minutes should from 0 - 59.";
+        case TimeError::InvalidChar:
+            return "Error: Time contains invalid characters.";
+        case TimeError::InvalidSeparator:
+            return "Error: Invalid or missing time separator (:).";
+        case TimeError::InvalidLength:
+            return "Error: Time entered is too short or long (it must me like 23:55).";
+        default:
+            return "ErrorL Unknown Time error occurred.";
     }
 }
