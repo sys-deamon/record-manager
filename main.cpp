@@ -95,6 +95,13 @@ int main()
             std::cout << "Wake Date: ";
             std::getline(std::cin, wakeDate, '\n');
 
+            dateValidationResult = IsValidDate(wakeDate);
+            if (dateValidationResult != DateError::Success)
+            {
+                std::cout << GetDateErrorMessage(dateValidationResult) << std::endl;
+                return EXIT_FAILURE; // for now
+            }
+
             std::cout << "Wake Time: ";
             std::getline(std::cin, wakeTime, '\n');
 
