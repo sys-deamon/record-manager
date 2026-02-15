@@ -49,3 +49,4 @@ I intend to evolve this from a static sleep tracker into a dynamic record manage
 
 #### To do Later
 - Use Regex for input validation instead of the current nested if-else approach
+- Add operator Overloading for comparing structs and custom datatypes
