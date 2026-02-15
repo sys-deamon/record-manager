@@ -1,11 +1,12 @@
 # Variables
 CXX = g++
+CXXFLAGS = -g -O0 -Wall -Wextra
 TARGET = output
 SRC = main.cpp
 
-# Recipies
+# Recipes
 $(TARGET): $(SRC)
-	$(CXX) $(SRC) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET)
 
 # Cleaning
 .PHONY: clean
